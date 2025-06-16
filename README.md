@@ -1,0 +1,2 @@
+# chinese_japan_translate
+一个基于deepseek接口的中日翻译网页
