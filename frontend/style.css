@@ -1,0 +1,56 @@
+/* 中日翻译应用自定义样式 - 最小化样式，主要使用Bootstrap */
+
+/* 字体优化 - 确保中日文显示正常 */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
+    line-height: 1.6;
+}
+
+/* 翻译结果区域平滑动画 */
+#resultDiv {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(10px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+/* 输入框焦点增强 */
+#inputText:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+}
+
+/* 按钮悬停效果 */
+.btn:hover {
+    transform: translateY(-1px);
+    transition: transform 0.2s ease;
+}
+
+/* 结果卡片样式 */
+.alert-success {
+    border-left: 4px solid #198754;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+    .container-fluid {
+        padding: 1rem;
+    }
+    
+    .card-body {
+        padding: 1.5rem !important;
+    }
+    
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+    }
+} 
