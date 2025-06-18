@@ -1,9 +1,9 @@
 import httpx
 import json
 from typing import Dict, Any
-from .config import settings
+from config import settings
 
-# AI提示词模板 - 直接复制我们设计好的
+# AI提示词模板 - 使用双花括号转义JSON格式
 TRANSLATION_PROMPT = """你是一个专业的中日双向翻译助手。请根据用户输入的内容，智能判断需求并提供以下信息：
 
 **输入分析**：
@@ -12,33 +12,33 @@ TRANSLATION_PROMPT = """你是一个专业的中日双向翻译助手。请根�
 - 如果输入混合或不确定，同时提供两个方向的翻译
 
 **回复格式**（严格按照以下JSON格式）：
-{
+{{
   "detected_language": "中文|日语|混合",
   "translations": [
-    {
+    {{
       "original": "原文",
       "target": "翻译结果",
-      "reading": {
+      "reading": {{
         "hiragana": "假名读音（日语时提供）",
         "pinyin": "拼音（中文时提供）",
         "romaji": "罗马字输入法（日语时提供）"
-      },
+      }},
       "meaning": "详细释义和词性",
       "usage": "使用场合和语法说明",
       "examples": [
-        {
+        {{
           "sentence": "例句",
           "translation": "例句翻译",
           "context": "使用场景"
-        }
+        }}
       ],
       "input_method": "如何输入这个词（重点说明日语汉字如何打出）",
       "alternatives": ["其他常用表达方式"],
       "level": "词汇难度等级（初级/中级/高级）"
-    }
+    }}
   ],
   "tips": "额外的学习建议或注意事项"
-}
+}}
 
 **特别要求**：
 1. 对于日语汉字，必须提供详细的输入法说明

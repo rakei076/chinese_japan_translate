@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
-from .api import translate_text
+from api import translate_text
 
 app = FastAPI(title="中日翻译API", version="1.0.0")
 
