@@ -39,6 +39,21 @@
         }
         .text-primary { color: #2da44e !important; }
         .badge.bg-primary { background-color: #2da44e !important; }
+        
+        /* 新增：标签颜色系统 */
+        .badge-category {
+            font-size: 0.75em;
+            padding: 0.35em 0.65em;
+        }
+        .category-地名 { background-color: #0969da; }
+        .category-大学 { background-color: #8250df; }
+        .category-交通 { background-color: #1f883d; }
+        .category-计算机 { background-color: #d1242f; }
+        .category-医学 { background-color: #cf222e; }
+        .category-法律 { background-color: #8250df; }
+        .category-经济 { background-color: #fb8500; }
+        .category-机构 { background-color: #6f42c1; }
+        .category-通用词汇 { background-color: #6c757d; }
     </style>
 </head>
 <body>
@@ -49,7 +64,7 @@
                     <h1 class="display-6 fw-bold text-primary">
                         <i class="bi bi-translate"></i> 中日翻译助手
                     </h1>
-                    <p class="text-muted">智能双向翻译，输入法指导，例句丰富</p>
+                    <p class="text-muted">智能识别，分类标签，极简高效</p>
                 </div>
                 
                 <div class="card">
@@ -61,7 +76,7 @@
                             <textarea class="form-control form-control-lg" id="inputText" rows="4" 
                                 placeholder="请输入要翻译的文本..." maxlength="500"></textarea>
                             <div class="d-flex justify-content-between mt-2">
-                                <small class="text-muted">支持中日双向智能识别</small>
+                                <small class="text-muted">AI智能识别语言和分类</small>
                                 <small class="text-muted"><span id="charCount">0</span>/500 字符</small>
                             </div>
                         </div>
@@ -89,7 +104,7 @@
                 <div class="text-center mt-4">
                     <small class="text-muted">
                         <i class="bi bi-shield-check"></i> 
-                        基于DeepSeek AI • GitHub风格设计 • Cloudflare部署
+                        基于DeepSeek AI • 极简设计 • Cloudflare部署
                     </small>
                 </div>
             </div>
@@ -98,9 +113,8 @@
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // API配置 - 在Cloudflare中需要配置Worker
+        // API配置 - 使用Cloudflare Worker端点
         const API_ENDPOINT = '/api/translate';
-        const DEEPSEEK_API_KEY = 'sk-1bde4e88dae04224b43a8ac65e782d51'; // 在生产环境中应该隐藏
         
         function checkCharCount() {
             const input = document.getElementById('inputText');
@@ -144,80 +158,32 @@
             resultDiv.style.display = 'none';
             
             try {
-                // 直接调用DeepSeek API (仅用于演示，生产环境需要使用Worker)
-                const result = await callDeepSeekAPI(inputText);
+                const response = await fetch(API_ENDPOINT, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ text: inputText })
+                });
                 
                 loadingDiv.style.display = 'none';
                 
-                if (result.success) {
-                    displayTranslationResult(result.data);
+                if (!response.ok) {
+                    throw new Error(`请求失败: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.error) {
+                    showError(result.error);
                 } else {
-                    showError(result.error || '翻译失败');
+                    displayTranslationResult(result);
                 }
                 
             } catch (error) {
                 console.error('翻译错误:', error);
                 loadingDiv.style.display = 'none';
                 showError('网络错误: ' + error.message);
-            }
-        }
-        
-        async function callDeepSeekAPI(text) {
-            try {
-                const prompt = `请翻译以下文本，并返回JSON格式：
-
-输入文本: ${text}
-
-要求：
-1. 自动检测是中文还是日文
-2. 如果是中文，翻译成日文；如果是日文，翻译成中文
-3. 提供读音指导（日文提供平假名）
-4. 提供输入法指导
-5. 严格返回JSON格式，包含：detected_language, translations数组
-
-示例格式：
-{
-  "detected_language": "中文",
-  "translations": [{
-    "original": "你好",
-    "target": "こんにちは", 
-    "reading": {"hiragana": "こんにちは"},
-    "input_method": "在日文输入法中输入konnichiha，选择こんにちは"
-  }]
-}`;
-
-                const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${DEEPSEEK_API_KEY}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        model: 'deepseek-chat',
-                        messages: [{ role: 'user', content: prompt }],
-                        temperature: 0.1,
-                        max_tokens: 1000
-                    })
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`API请求失败: ${response.status}`);
-                }
-                
-                const data = await response.json();
-                const content = data.choices[0].message.content;
-                
-                // 提取JSON内容
-                const jsonMatch = content.match(/\{[\s\S]*\}/);
-                if (jsonMatch) {
-                    const translationData = JSON.parse(jsonMatch[0]);
-                    return { success: true, data: translationData };
-                } else {
-                    return { success: false, error: '无法解析AI响应' };
-                }
-                
-            } catch (error) {
-                return { success: false, error: `翻译失败: ${error.message}` };
             }
         }
         
@@ -228,14 +194,24 @@
                 let html = '<div class="alert alert-success" role="alert">';
                 html += '<h4 class="alert-heading"><i class="bi bi-translate me-2"></i>翻译结果</h4>';
                 
-                // 检测到的语言
+                // 检测到的语言和分类标签
+                const badges = [];
                 if (data.detected_language) {
-                    const langDisplay = data.detected_language === '中文' ? '中文 → 日语' : '日语 → 中文';
-                    html += `<div class="mb-3">
-                        <span class="badge bg-primary fs-6">
-                            <i class="bi bi-globe me-1"></i>${langDisplay}
-                        </span>
-                    </div>`;
+                    const langIcon = data.detected_language === '中文' ? 'translate' : 'translate';
+                    badges.push(`<span class="badge bg-primary me-2">
+                        <i class="bi bi-${langIcon} me-1"></i>${data.translation_direction || data.detected_language}
+                    </span>`);
+                }
+                
+                if (data.word_category) {
+                    const categoryClass = `category-${data.word_category}`;
+                    badges.push(`<span class="badge ${categoryClass} badge-category">
+                        <i class="bi bi-tag me-1"></i>${data.word_category}
+                    </span>`);
+                }
+                
+                if (badges.length > 0) {
+                    html += `<div class="mb-3">${badges.join('')}</div>`;
                 }
                 
                 // 主要翻译结果
@@ -266,26 +242,59 @@
                         </div>
                     </div>`;
                     
-                    // 读音信息
-                    if (translation.reading) {
-                        html += `<div class="mb-3">
-                            <h6 class="mb-2"><i class="bi bi-volume-up me-1"></i>读音</h6>
-                            <div class="d-flex flex-wrap gap-2">`;
-                        
-                        if (translation.reading.hiragana) {
-                            html += `<span class="badge bg-light text-dark">${translation.reading.hiragana}</span>`;
-                        }
-                        
-                        html += `</div>
-                        </div>`;
+                    // 读音和释义
+                    const infoCards = [];
+                    
+                    if (translation.reading && translation.reading.hiragana) {
+                        infoCards.push(`
+                            <div class="col-md-6 mb-2">
+                                <div class="card border-info">
+                                    <div class="card-body">
+                                        <h6 class="card-subtitle mb-2 text-muted">
+                                            <i class="bi bi-volume-up me-1"></i>读音
+                                        </h6>
+                                        <p class="card-text">${translation.reading.hiragana}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `);
                     }
                     
-                    // 输入法指导
-                    if (translation.input_method) {
-                        html += `<div class="alert alert-info mb-0">
-                            <h6 class="mb-2"><i class="bi bi-keyboard me-1"></i>输入法指导</h6>
-                            <p class="mb-0">${translation.input_method}</p>
-                        </div>`;
+                    if (translation.meaning) {
+                        infoCards.push(`
+                            <div class="col-md-6 mb-2">
+                                <div class="card border-success">
+                                    <div class="card-body">
+                                        <h6 class="card-subtitle mb-2 text-muted">
+                                            <i class="bi bi-book me-1"></i>释义
+                                        </h6>
+                                        <p class="card-text">${translation.meaning}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `);
+                    }
+                    
+                    if (infoCards.length > 0) {
+                        html += `<div class="row mb-3">${infoCards.join('')}</div>`;
+                    }
+                    
+                    // 例句
+                    if (translation.examples && translation.examples.length > 0) {
+                        html += `<div class="card border-warning mb-3">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-3 text-muted">
+                                    <i class="bi bi-chat-quote me-1"></i>例句
+                                </h6>`;
+                        
+                        translation.examples.forEach(example => {
+                            html += `<div class="mb-2">
+                                <p class="mb-1"><strong>${example.sentence}</strong></p>
+                                <p class="mb-0 text-muted small">${example.translation}</p>
+                            </div>`;
+                        });
+                        
+                        html += `</div></div>`;
                     }
                 }
                 

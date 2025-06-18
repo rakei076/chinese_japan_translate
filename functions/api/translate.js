@@ -31,6 +31,25 @@ export async function onRequestPost(context) {
       );
     }
 
+    // 🤖 极简AI提示词
+    const prompt = `请翻译以下文本并返回JSON格式：
+
+文本：${text}
+
+JSON格式：
+{
+  "detected_language": "中文|日语",
+  "translation_direction": "中→日|日→中",
+  "word_category": "地名|大学|交通|计算机|医学|法律|经济|机构|通用词汇",
+  "translations": [{
+    "original": "原文",
+    "target": "翻译结果", 
+    "reading": {"hiragana": "假名读音（日语时提供）"},
+    "meaning": "简要释义",
+    "examples": [{"sentence": "例句", "translation": "例句翻译"}]
+  }]
+}`;
+
     // 调用DeepSeek API
     const deepseekResponse = await fetch('https://api.deepseek.com/v1/chat/completions', {
       method: 'POST',
@@ -40,27 +59,9 @@ export async function onRequestPost(context) {
       },
       body: JSON.stringify({
         model: 'deepseek-chat',
-        messages: [{
-          role: 'user',
-          content: `请分析以下文本并返回JSON格式的翻译结果。你需要：
-1. 检测语言（chinese或japanese）
-2. 提供准确的翻译
-3. 给出输入法建议和使用示例
-
-文本：${text}
-
-请严格按照以下JSON格式返回：
-{{
-  "detected_language": "chinese或japanese",
-  "translation": "翻译结果",
-  "input_methods": ["输入法建议1", "输入法建议2"],
-  "examples": ["使用示例1", "使用示例2"],
-  "alternatives": ["替代表达1", "替代表达2"],
-  "tips": "实用小贴士"
-}}`
-        }],
-        temperature: 0.7,
-        max_tokens: 1500
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.3,
+        max_tokens: 1000
       })
     });
 
@@ -78,15 +79,20 @@ export async function onRequestPost(context) {
       const jsonEnd = content.lastIndexOf('}') + 1;
       const jsonStr = content.slice(jsonStart, jsonEnd);
       result = JSON.parse(jsonStr);
+      
     } catch (parseError) {
       // 如果解析失败，返回基本翻译
       result = {
-        detected_language: "unknown",
-        translation: content,
-        input_methods: [],
-        examples: [],
-        alternatives: [],
-        tips: "AI返回格式异常，请重试"
+        detected_language: "未知",
+        translation_direction: "未知",
+        word_category: "通用词汇",
+        translations: [{
+          original: text,
+          target: content,
+          reading: { hiragana: "" },
+          meaning: "AI返回格式异常",
+          examples: []
+        }]
       };
     }
 
