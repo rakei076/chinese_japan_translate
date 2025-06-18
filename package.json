@@ -2,7 +2,7 @@
   "name": "chinese-japanese-translation",
   "version": "2.0.0",
   "description": "中日翻译应用 V2.0 - 智能缓存 + 统计分析",
-  "main": "functions/api/translate.js",
+  "main": "src/index.js",
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
