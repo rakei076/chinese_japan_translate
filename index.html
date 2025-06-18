@@ -3,341 +3,223 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>中日翻译助手</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <title>中日翻译API V2.1 测试</title>
     <style>
-        /* GitHub风格样式 */
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; 
-            background-color: #f6f8fa; 
-            line-height: 1.6;
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
         }
-        .card { 
-            background: #ffffff; 
-            border: 1px solid #d0d7de; 
-            border-radius: 6px; 
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
-        .btn-primary { 
-            background-color: #2da44e; 
-            border-color: #2da44e; 
-            font-weight: 500;
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
         }
-        .btn-primary:hover {
-            background-color: #2c974b;
-            border-color: #2c974b;
+        .api-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 4px solid #007bff;
         }
-        .alert-success { 
-            background-color: #dafbe1; 
-            border: 1px solid #2da44e; 
-            color: #0f5132;
+        .translate-form {
+            margin-bottom: 30px;
         }
-        .form-control:focus {
-            border-color: #2da44e;
-            box-shadow: 0 0 0 0.2rem rgba(45, 164, 78, 0.25);
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
         }
-        .text-primary { color: #2da44e !important; }
-        .badge.bg-primary { background-color: #2da44e !important; }
-        
-        /* 新增：标签颜色系统 */
-        .badge-category {
-            font-size: 0.75em;
-            padding: 0.35em 0.65em;
+        button {
+            background: #007bff;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
         }
-        .category-地名 { background-color: #0969da; }
-        .category-大学 { background-color: #8250df; }
-        .category-交通 { background-color: #1f883d; }
-        .category-计算机 { background-color: #d1242f; }
-        .category-医学 { background-color: #cf222e; }
-        .category-法律 { background-color: #8250df; }
-        .category-经济 { background-color: #fb8500; }
-        .category-机构 { background-color: #6f42c1; }
-        .category-通用词汇 { background-color: #6c757d; }
+        button:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+        .result {
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 4px solid #28a745;
+        }
+        .error {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+        }
+        .loading {
+            text-align: center;
+            color: #666;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .stat-item {
+            background: #f1f3f5;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
-    <div class="container-fluid py-4">
-        <div class="row justify-content-center">
-            <div class="col-md-10 col-lg-8">
-                <div class="text-center mb-4">
-                    <h1 class="display-6 fw-bold text-primary">
-                        <i class="bi bi-translate"></i> 中日翻译助手
-                    </h1>
-                    <p class="text-muted">智能识别，分类标签，极简高效</p>
-                </div>
-                
-                <div class="card">
-                    <div class="card-body p-4">
-                        <div class="mb-4">
-                            <label for="inputText" class="form-label fw-semibold">
-                                <i class="bi bi-pencil-square"></i> 输入文本（中文或日文）
-                            </label>
-                            <textarea class="form-control form-control-lg" id="inputText" rows="4" 
-                                placeholder="请输入要翻译的文本..." maxlength="500"></textarea>
-                            <div class="d-flex justify-content-between mt-2">
-                                <small class="text-muted">AI智能识别语言和分类</small>
-                                <small class="text-muted"><span id="charCount">0</span>/500 字符</small>
-                            </div>
-                        </div>
-                        
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-center mb-4">
-                            <button type="button" class="btn btn-primary btn-lg px-4" onclick="translateText()">
-                                <i class="bi bi-arrow-left-right"></i> 开始翻译
-                            </button>
-                            <button type="button" class="btn btn-outline-secondary btn-lg px-4" onclick="clearInput()">
-                                <i class="bi bi-eraser"></i> 清空
-                            </button>
-                        </div>
-                        
-                        <div id="loadingDiv" class="text-center py-4" style="display: none;">
-                            <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">翻译中...</span>
-                            </div>
-                            <p class="mt-2 text-muted">AI正在分析和翻译...</p>
-                        </div>
-                        
-                        <div id="resultDiv" style="display: none;"></div>
-                    </div>
-                </div>
-                
-                <div class="text-center mt-4">
-                    <small class="text-muted">
-                        <i class="bi bi-shield-check"></i> 
-                        基于DeepSeek AI • 极简设计 • Cloudflare部署
-                    </small>
-                </div>
+    <div class="container">
+        <h1>🈳 中日翻译API V2.1 测试工具</h1>
+        
+        <div class="api-info" id="apiInfo">
+            <h3>📡 API状态检测中...</h3>
+        </div>
+
+        <div class="translate-form">
+            <h3>🔤 翻译测试</h3>
+            <input type="text" id="textInput" placeholder="输入中文或日文..." value="你好世界">
+            <button onclick="translate()">🚀 开始翻译</button>
+        </div>
+
+        <div id="result"></div>
+
+        <div class="stats" id="stats" style="display: none;">
+            <div class="stat-item">
+                <div class="stat-value" id="processingTime">-</div>
+                <div class="stat-label">处理时间</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="confidence">-</div>
+                <div class="stat-label">置信度</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="cacheHits">-</div>
+                <div class="stat-label">缓存命中</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="category">-</div>
+                <div class="stat-label">词汇分类</div>
             </div>
         </div>
     </div>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
-        // API配置 - 使用Cloudflare Worker端点
-        const API_ENDPOINT = '/api/translate';
-        
-        function checkCharCount() {
-            const input = document.getElementById('inputText');
-            const charCount = document.getElementById('charCount');
-            const currentLength = input.value.length;
-            
-            charCount.textContent = currentLength;
-            
-            if (currentLength > 400) {
-                charCount.className = 'text-warning';
-            } else if (currentLength > 450) {
-                charCount.className = 'text-danger';
-            } else {
-                charCount.className = 'text-muted';
+        const API_BASE = 'https://chinese-translate-api.lurenjialu2.workers.dev';
+
+        // 加载API信息
+        async function loadApiInfo() {
+            try {
+                const response = await fetch(API_BASE);
+                const data = await response.json();
+                
+                document.getElementById('apiInfo').innerHTML = `
+                    <h3>📡 ${data.name}</h3>
+                    <p><strong>版本:</strong> ${data.version}</p>
+                    <p><strong>AI引擎:</strong> ${data.ai_engine}</p>
+                    <p><strong>功能:</strong> ${data.features.join(', ')}</p>
+                `;
+            } catch (error) {
+                document.getElementById('apiInfo').innerHTML = `
+                    <h3>❌ API连接失败</h3>
+                    <p>错误: ${error.message}</p>
+                `;
             }
         }
-        
-        function clearInput() {
-            document.getElementById('inputText').value = '';
-            document.getElementById('resultDiv').style.display = 'none';
-            checkCharCount();
-        }
-        
-        async function translateText() {
-            const inputText = document.getElementById('inputText').value.trim();
+
+        // 翻译函数
+        async function translate() {
+            const text = document.getElementById('textInput').value.trim();
+            const resultDiv = document.getElementById('result');
+            const statsDiv = document.getElementById('stats');
             
-            if (!inputText) {
+            if (!text) {
                 alert('请输入要翻译的文本');
                 return;
             }
-            
-            if (inputText.length > 500) {
-                alert('输入文本超过500字符限制');
-                return;
-            }
-            
-            const loadingDiv = document.getElementById('loadingDiv');
-            const resultDiv = document.getElementById('resultDiv');
-            
-            loadingDiv.style.display = 'block';
-            resultDiv.style.display = 'none';
-            
+
+            // 显示加载状态
+            resultDiv.innerHTML = '<div class="loading">🔄 翻译中...</div>';
+            resultDiv.className = 'result';
+
             try {
-                const response = await fetch(API_ENDPOINT, {
+                const response = await fetch(`${API_BASE}/api/translate`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ text: inputText })
+                    body: JSON.stringify({ text })
                 });
-                
-                loadingDiv.style.display = 'none';
-                
+
                 if (!response.ok) {
-                    throw new Error(`请求失败: ${response.status}`);
+                    throw new Error(`HTTP错误: ${response.status}`);
                 }
+
+                const data = await response.json();
                 
-                const result = await response.json();
-                
-                if (result.error) {
-                    showError(result.error);
-                } else {
-                    displayTranslationResult(result);
-                }
-                
+                // 显示翻译结果
+                resultDiv.innerHTML = `
+                    <h3>✅ 翻译结果</h3>
+                    <p><strong>原文:</strong> ${text}</p>
+                    <p><strong>译文:</strong> ${data.translations[0]}</p>
+                    <p><strong>语言:</strong> ${data.detected_language}</p>
+                    <p><strong>方向:</strong> ${data.translation_direction}</p>
+                    <p><strong>读音:</strong> ${data.romanization}</p>
+                    <p><strong>来源:</strong> ${data.source} ${data.from_cache ? '(缓存)' : '(新翻译)'}</p>
+                `;
+
+                // 更新统计信息
+                document.getElementById('processingTime').textContent = data.processing_time;
+                document.getElementById('confidence').textContent = Math.round(data.confidence * 100) + '%';
+                document.getElementById('cacheHits').textContent = data.cache_hit_count;
+                document.getElementById('category').textContent = data.word_category;
+                statsDiv.style.display = 'grid';
+
             } catch (error) {
-                console.error('翻译错误:', error);
-                loadingDiv.style.display = 'none';
-                showError('网络错误: ' + error.message);
+                resultDiv.innerHTML = `
+                    <h3>❌ 翻译失败</h3>
+                    <p>错误信息: ${error.message}</p>
+                `;
+                resultDiv.className = 'result error';
             }
         }
-        
-        function displayTranslationResult(data) {
-            const resultDiv = document.getElementById('resultDiv');
-            
-            try {
-                let html = '<div class="alert alert-success" role="alert">';
-                html += '<h4 class="alert-heading"><i class="bi bi-translate me-2"></i>翻译结果</h4>';
-                
-                // 检测到的语言和分类标签
-                const badges = [];
-                if (data.detected_language) {
-                    const langIcon = data.detected_language === '中文' ? 'translate' : 'translate';
-                    badges.push(`<span class="badge bg-primary me-2">
-                        <i class="bi bi-${langIcon} me-1"></i>${data.translation_direction || data.detected_language}
-                    </span>`);
-                }
-                
-                if (data.word_category) {
-                    const categoryClass = `category-${data.word_category}`;
-                    badges.push(`<span class="badge ${categoryClass} badge-category">
-                        <i class="bi bi-tag me-1"></i>${data.word_category}
-                    </span>`);
-                }
-                
-                if (badges.length > 0) {
-                    html += `<div class="mb-3">${badges.join('')}</div>`;
-                }
-                
-                // 主要翻译结果
-                if (data.translations && data.translations.length > 0) {
-                    const translation = data.translations[0];
-                    
-                    // 原文和翻译
-                    html += `<div class="row mb-3">
-                        <div class="col-md-6 mb-2">
-                            <div class="card bg-light">
-                                <div class="card-body">
-                                    <h6 class="card-subtitle mb-2 text-muted">
-                                        <i class="bi bi-file-text me-1"></i>原文
-                                    </h6>
-                                    <h5 class="card-title mb-0">${translation.original}</h5>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 mb-2">
-                            <div class="card bg-primary text-white">
-                                <div class="card-body">
-                                    <h6 class="card-subtitle mb-2 text-white-50">
-                                        <i class="bi bi-arrow-right-circle me-1"></i>翻译
-                                    </h6>
-                                    <h4 class="card-title mb-0">${translation.target}</h4>
-                                </div>
-                            </div>
-                        </div>
-                    </div>`;
-                    
-                    // 读音和释义
-                    const infoCards = [];
-                    
-                    if (translation.reading && translation.reading.hiragana) {
-                        infoCards.push(`
-                            <div class="col-md-6 mb-2">
-                                <div class="card border-info">
-                                    <div class="card-body">
-                                        <h6 class="card-subtitle mb-2 text-muted">
-                                            <i class="bi bi-volume-up me-1"></i>读音
-                                        </h6>
-                                        <p class="card-text">${translation.reading.hiragana}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        `);
-                    }
-                    
-                    if (translation.meaning) {
-                        infoCards.push(`
-                            <div class="col-md-6 mb-2">
-                                <div class="card border-success">
-                                    <div class="card-body">
-                                        <h6 class="card-subtitle mb-2 text-muted">
-                                            <i class="bi bi-book me-1"></i>释义
-                                        </h6>
-                                        <p class="card-text">${translation.meaning}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        `);
-                    }
-                    
-                    if (infoCards.length > 0) {
-                        html += `<div class="row mb-3">${infoCards.join('')}</div>`;
-                    }
-                    
-                    // 例句
-                    if (translation.examples && translation.examples.length > 0) {
-                        html += `<div class="card border-warning mb-3">
-                            <div class="card-body">
-                                <h6 class="card-subtitle mb-3 text-muted">
-                                    <i class="bi bi-chat-quote me-1"></i>例句
-                                </h6>`;
-                        
-                        translation.examples.forEach(example => {
-                            html += `<div class="mb-2">
-                                <p class="mb-1"><strong>${example.sentence}</strong></p>
-                                <p class="mb-0 text-muted small">${example.translation}</p>
-                            </div>`;
-                        });
-                        
-                        html += `</div></div>`;
-                    }
-                }
-                
-                html += '</div>';
-                
-                resultDiv.innerHTML = html;
-                resultDiv.style.display = 'block';
-                
-                // 平滑滚动到结果
-                resultDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                
-            } catch (error) {
-                console.error('显示结果错误:', error);
-                showError('显示翻译结果时出错');
+
+        // 页面加载时获取API信息
+        window.onload = loadApiInfo;
+
+        // 回车键翻译
+        document.getElementById('textInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                translate();
             }
-        }
-        
-        function showError(message) {
-            const resultDiv = document.getElementById('resultDiv');
-            resultDiv.innerHTML = `
-                <div class="alert alert-danger" role="alert">
-                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                    <strong>翻译失败</strong><br>
-                    ${message}
-                </div>
-            `;
-            resultDiv.style.display = 'block';
-        }
-        
-        // 页面加载完成后的初始化
-        document.addEventListener('DOMContentLoaded', function() {
-            const inputText = document.getElementById('inputText');
-            inputText.addEventListener('input', checkCharCount);
-            
-            // 回车键翻译
-            inputText.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    translateText();
-                }
-            });
-            
-            checkCharCount();
         });
     </script>
 </body>
