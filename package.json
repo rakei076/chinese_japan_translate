@@ -11,6 +11,9 @@
   "keywords": ["translation", "chinese", "japanese", "api", "cloudflare", "ai", "deepseek"],
   "dependencies": {},
   "devDependencies": {
-    "wrangler": "^3.0.0"
+    "wrangler": "^4.20.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
