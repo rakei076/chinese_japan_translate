@@ -7,14 +7,14 @@ compatibility_date = "2023-12-01"
 APP_ENV = "production"
 VERSION = "2.1"
 
-# KV命名空间配置 - 这些ID需要在Workers中重新配置
+# KV命名空间配置 - 使用现有的KV
 [[kv_namespaces]]
 binding = "CACHE"
-id = "YOUR_CACHE_KV_ID"
+id = "b29f99f32630402aa8bbecc1182222dc"
 
 [[kv_namespaces]]
 binding = "STATS"  
-id = "YOUR_STATS_KV_ID"
+id = "7afc816bfff64a85bc0f09d6892f2a63"
 
 # 开发环境配置
 [env.development]
