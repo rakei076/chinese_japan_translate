@@ -1,0 +1,32 @@
+name = "chinese-japanese-translation"
+main = "functions/api/translate.js"
+compatibility_date = "2023-12-01"
+
+# 环境变量
+[vars]
+APP_ENV = "production"
+VERSION = "2.0"
+
+# KV命名空间配置
+[[kv_namespaces]]
+binding = "CACHE"
+id = "b29f99f32630402aa8bbecc1182222dc"
+preview_id = "4f0ab00246b7488cb07717c0148b282a"
+
+[[kv_namespaces]]
+binding = "STATS"
+id = "7afc816bfff64a85bc0f09d6892f2a63"
+preview_id = "2f9d0b29f955451484dda31c5d2297bc"
+
+# 开发环境配置
+[env.development]
+name = "chinese-japanese-translation-dev"
+vars = { APP_ENV = "development", VERSION = "2.0-dev" }
+
+[[env.development.kv_namespaces]]
+binding = "CACHE"
+id = "b29f99f32630402aa8bbecc1182222dc"
+
+[[env.development.kv_namespaces]]
+binding = "STATS"
+id = "7afc816bfff64a85bc0f09d6892f2a63" 

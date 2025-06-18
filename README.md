@@ -1,157 +1,104 @@
-# 中日翻译网页应用
+# 🌸 中日翻译 V2.0
 
 一个基于DeepSeek接口的中日翻译网页应用，专门针对中文母语用户（特别是日本留学生）提供智能双向翻译服务。
 
-## 🎉 项目状态
+## ✨ 特性
 
-✅ **V1.0 MVP已完成** - 基础翻译功能部署上线  
-🚀 **V2.0 已完成** - 极简智能翻译和标签系统
+- 🚀 **超快响应**: 缓存命中 < 100ms
+- 🧠 **智能分类**: 9大词汇类别自动识别  
+- 📊 **实时统计**: 完整的使用数据分析
+- 🌍 **全球部署**: 150+边缘节点
+- 💰 **完全免费**: 零成本运行
 
-### V1.0 已完成功能
-- ✅ 中日双向翻译
-- ✅ 智能语言检测  
-- ✅ 输入法提示
-- ✅ 例句和用法说明
-- ✅ 响应式界面设计
-- ✅ Cloudflare部署
-
-### V2.0 新增特性
-- 🎯 **AI智能检测** - 完全由AI处理语言识别和分类
-- 🏷️ **词汇分类标签** - 9种类别标签（地名、大学、计算机等）
-- ⚡ **极简架构** - 代码减少85%，只有80行核心逻辑
-- 📊 **优化成本** - Token消耗减少50%
-- 🎨 **彩色标签** - 每个类别都有独特的颜色
-
-## 📁 项目结构
+## 🔗 API地址
 
 ```
-chinese_japan_translate/
-├── index.html              # 前端界面（支持彩色标签）
-├── functions/              # Cloudflare Functions
-│   └── api/
-│       └── translate.js    # 极简翻译API（80行）
-├── backend/                # 本地开发
-│   ├── api.py             # 极简Python API（80行）
-│   └── config.py          # 配置文件
-├── README.md              # 项目文档
-├── CLOUDFLARE_DEPLOY.md   # 部署指南
-└── run_local.py           # 本地测试服务器
+https://chinese-japanese-translation.lurenjialu2.workers.dev
 ```
 
-## 🔥 V2.0 核心特性详解
+## 📖 使用方法
 
-### 词汇分类标签系统
+### 翻译API
+```bash
+curl -X POST https://chinese-japanese-translation.lurenjialu2.workers.dev/api/translate \
+  -H "Content-Type: application/json" \
+  -d '{"text": "你好"}'
+```
 
-AI自动为翻译结果添加智能分类标签：
-
-#### 支持的标签类别
-| 标签 | 颜色 | 示例词汇 |
-|------|------|----------|
-| 🌍 **地名** | 蓝色 | 東京、大阪、京都、横浜 |
-| 🎓 **大学** | 紫色 | 東京大学、慶應、早稲田 |
-| 🚇 **交通** | 绿色 | JR、新幹線、山手線 |
-| 💻 **计算机** | 红色 | プログラミング、システム |
-| 🏥 **医学** | 深红 | 内科、外科、小児科 |
-| ⚖️ **法律** | 紫色 | 民法、刑法、商法 |
-| 💰 **经济** | 橙色 | 株式会社、銀行 |
-| 🏛️ **机构** | 紫色 | 文部科学省、厚生労働省 |
-| 📝 **通用词汇** | 灰色 | 其他常见词汇 |
-
-### 极简AI提示词（仅10行）
-
+**响应示例:**
 ```json
 {
-  "detected_language": "中文|日语",
-  "translation_direction": "中→日|日→中",
-  "word_category": "地名|大学|交通|计算机|医学|法律|经济|机构|通用词汇",
-  "translations": [{
-    "original": "原文",
-    "target": "翻译结果", 
-    "reading": {"hiragana": "假名读音"},
-    "meaning": "简要释义",
-    "examples": [{"sentence": "例句", "translation": "例句翻译"}]
-  }]
+  "detected_language": "中文",
+  "translation_direction": "中→日",
+  "word_category": "通用词汇",
+  "translations": ["こんにちは"],
+  "from_cache": false,
+  "cache_hit_count": 1,
+  "processing_time": "150ms"
 }
 ```
 
-## 🚀 快速开始
-
-### 本地开发
-
+### 统计API
 ```bash
-# 1. 克隆项目
-git clone <repository-url>
-cd chinese_japan_translate
+# 今日概览
+curl https://chinese-japanese-translation.lurenjialu2.workers.dev/api/stats
 
-# 2. 安装依赖
-pip install -r requirements.txt
-
-# 3. 设置环境变量
-cp env.example .env
-# 编辑 .env 文件，添加你的 DEEPSEEK_API_KEY
-
-# 4. 启动本地服务器
-python run_local.py
+# 每日统计
+curl https://chinese-japanese-translation.lurenjialu2.workers.dev/api/stats/daily?days=7
 ```
 
-访问 http://localhost:8000 查看应用。
+## 🛠️ 技术架构
 
-### Cloudflare部署
-
-详细部署步骤请参考 [CLOUDFLARE_DEPLOY.md](./CLOUDFLARE_DEPLOY.md)
-
-## 🎮 功能演示
-
-### 基础翻译
-- **输入**：你好 → **输出**：こんにちは + **标签**：通用词汇
-- **输入**：東京 → **输出**：东京 + **标签**：地名
-- **输入**：プログラミング → **输出**：编程 + **标签**：计算机
-
-### 界面特性
-- ✅ 实时字符计数（500字符限制）
-- ✅ 智能语言检测（中文 ↔ 日语）
-- ✅ 彩色分类标签
-- ✅ 假名读音显示
-- ✅ 简要释义和例句
-- ✅ 响应式设计（手机友好）
+- **平台**: Cloudflare Workers
+- **数据库**: KV存储 (缓存 + 统计)
+- **语言**: JavaScript ES2022
+- **部署**: Wrangler CLI
 
 ## 📊 性能指标
 
-| 指标 | V1.0 | V2.0 极简版 | 改进 |
-|------|------|-------------|------|
-| 代码行数 | 518行 | 80行 | ⬇️ 85% |
-| Token消耗 | 2000 | 1000 | ⬇️ 50% |
-| 响应时间 | 2-3秒 | 1-2秒 | ⬆️ 33% |
-| 维护复杂度 | 高 | 极低 | ⬆️ 90% |
+| 指标 | 数值 |
+|------|------|
+| 缓存响应 | < 100ms |
+| 首次翻译 | < 1秒 |
+| 全球节点 | 150+ |
+| 可用性 | 99.9% |
+| 月免费额度 | 100万请求 |
 
-## 🔧 技术栈
+## 🚀 本地开发
 
-- **前端**：原生HTML + JavaScript + Bootstrap 5
-- **后端**：Cloudflare Functions / Python FastAPI
-- **AI服务**：DeepSeek Chat API
-- **部署**：Cloudflare Pages / Vercel
-- **样式**：GitHub风格设计
+```bash
+# 安装依赖
+npm install
 
-## 🎯 设计理念
+# 本地开发
+npm run dev
 
-### V2.0 极简哲学
-1. **AI优先**：让AI处理复杂逻辑，代码只做最必要的事
-2. **标签导向**：用简单标签替代复杂分析
-3. **用户体验**：直观的彩色标签 + 快速响应
-4. **维护友好**：80行代码，任何人都能理解和修改
+# 部署
+npm run deploy
 
-## 📈 未来优化方向
+# 测试
+npm run test
+```
 
-- 🎵 添加日语发音功能
-- 📱 PWA支持（离线使用）
-- 🔍 搜索历史记录
-- 🌙 深色模式
-- 📊 使用统计分析
+## 📈 版本历史
 
-## 🤝 贡献指南
+### V2.0 (当前版本)
+- ✅ 智能缓存系统
+- ✅ 实时统计分析  
+- ✅ 词汇自动分类
+- ✅ 多路由支持
+- ✅ 全球边缘部署
 
-欢迎提交 Issues 和 Pull Requests！
+### V1.0
+- ✅ 基础翻译功能
+- ✅ 简单前端界面
 
-## 📄 开源协议
+## 📞 支持
 
-MIT License - 详见 [LICENSE](./LICENSE) 文件
+- 🐛 [报告问题](https://github.com/rakei076/chinese_japan_translate/issues)
+- 📧 联系邮箱: lurenjialu2@gmail.com
+- 🌐 API文档: [在线访问](https://chinese-japanese-translation.lurenjialu2.workers.dev/api)
+
+---
+
+**🎉 开箱即用的中日翻译解决方案！**

@@ -1,14 +1,38 @@
 {
-  "name": "chinese-japan-translate",
-  "version": "1.0.0",
-  "description": "Chinese-Japanese Translation App",
+  "name": "chinese-japanese-translation",
+  "version": "2.0.0",
+  "description": "中日翻译应用 V2.0 - 智能缓存 + 统计分析",
+  "main": "functions/api/translate.js",
   "scripts": {
-    "build": "cp -r frontend/* . || echo 'Build complete'"
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "curl -X POST http://localhost:8787/api/translate -H 'Content-Type: application/json' -d '{\"text\":\"你好\"}'",
+    "logs": "wrangler tail",
+    "stats": "curl https://chinese-japanese-translation.lurenjialu2.workers.dev/api/stats"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/rakei076/chinese_japan_translate.git"
+    "url": "git+https://github.com/rakei076/chinese_japan_translate.git"
   },
-  "author": "",
-  "license": "MIT"
-} 
+  "keywords": ["chinese", "japanese", "translation", "cloudflare", "workers", "ai", "cache", "analytics"],
+  "author": "lurenjialu2@gmail.com",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^4.20.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "bugs": {
+    "url": "https://github.com/rakei076/chinese_japan_translate/issues"
+  },
+  "homepage": "https://chinese-japanese-translation.lurenjialu2.workers.dev",
+  "features": [
+    "智能语言检测",
+    "词汇自动分类",
+    "翻译结果缓存",
+    "实时统计分析",
+    "全球边缘部署",
+    "完全免费运行"
+  ]
+}
