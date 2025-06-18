@@ -1,0 +1,14 @@
+{
+  "name": "chinese-japan-translate",
+  "version": "1.0.0",
+  "description": "Chinese-Japanese Translation App",
+  "scripts": {
+    "build": "cp -r frontend/* . || echo 'Build complete'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rakei076/chinese_japan_translate.git"
+  },
+  "author": "",
+  "license": "MIT"
+} 
