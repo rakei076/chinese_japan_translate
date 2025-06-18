@@ -1,5 +1,191 @@
-// Cloudflare Workers 中日翻译 V2.0
-// 支持智能缓存、统计分析、多路由
+// Cloudflare Workers 中日翻译 V2.1
+// 支持智能缓存、统计分析、多路由 + 网页界面
+
+// 嵌入HTML页面
+const HTML_PAGE = `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中日翻译 V2.1</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .translate-form {
+            margin-bottom: 30px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+        button:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+        .result {
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 4px solid #28a745;
+        }
+        .error {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+        }
+        .loading {
+            text-align: center;
+            color: #666;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .stat-item {
+            background: #f1f3f5;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🈳 中日翻译 V2.1</h1>
+        
+        <div class="translate-form">
+            <input type="text" id="textInput" placeholder="输入中文或日文..." value="你好世界">
+            <button onclick="translate()">🚀 开始翻译</button>
+        </div>
+
+        <div id="result"></div>
+
+        <div class="stats" id="stats" style="display: none;">
+            <div class="stat-item">
+                <div class="stat-value" id="processingTime">-</div>
+                <div class="stat-label">处理时间</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="confidence">-</div>
+                <div class="stat-label">置信度</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="cacheHits">-</div>
+                <div class="stat-label">缓存命中</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="category">-</div>
+                <div class="stat-label">词汇分类</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function translate() {
+            const text = document.getElementById('textInput').value.trim();
+            const resultDiv = document.getElementById('result');
+            const statsDiv = document.getElementById('stats');
+            
+            if (!text) {
+                alert('请输入要翻译的文本');
+                return;
+            }
+
+            resultDiv.innerHTML = '<div class="loading">🔄 翻译中...</div>';
+            resultDiv.className = 'result';
+
+            try {
+                const response = await fetch('/api/translate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ text })
+                });
+
+                if (!response.ok) {
+                    throw new Error(\`HTTP错误: \${response.status}\`);
+                }
+
+                const data = await response.json();
+                
+                resultDiv.innerHTML = \`
+                    <h3>✅ 翻译结果</h3>
+                    <p><strong>原文:</strong> \${text}</p>
+                    <p><strong>译文:</strong> \${data.translations[0]}</p>
+                    <p><strong>语言:</strong> \${data.detected_language}</p>
+                    <p><strong>方向:</strong> \${data.translation_direction}</p>
+                    <p><strong>来源:</strong> \${data.source} \${data.from_cache ? '(缓存)' : '(新翻译)'}</p>
+                \`;
+
+                document.getElementById('processingTime').textContent = data.processing_time;
+                document.getElementById('confidence').textContent = Math.round(data.confidence * 100) + '%';
+                document.getElementById('cacheHits').textContent = data.cache_hit_count;
+                document.getElementById('category').textContent = data.word_category;
+                statsDiv.style.display = 'grid';
+
+            } catch (error) {
+                resultDiv.innerHTML = \`
+                    <h3>❌ 翻译失败</h3>
+                    <p>错误信息: \${error.message}</p>
+                \`;
+                resultDiv.className = 'result error';
+            }
+        }
+
+        document.getElementById('textInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                translate();
+            }
+        });
+    </script>
+</body>
+</html>`;
 
 // 简化哈希实现
 function simpleHash(str) {
@@ -349,11 +535,11 @@ export default {
         return response;
       }
       
-      // 根路径返回API信息
-      if (path === '/' || path === '/api') {
+      // API信息路径
+      if (path === '/api') {
         return new Response(JSON.stringify({
-          name: "中日翻译API V2.0",
-          version: env.VERSION || "2.0",
+          name: "中日翻译API V2.1",
+          version: env.VERSION || "2.1",
           ai_engine: env.DEEPSEEK_API_KEY ? "DeepSeek" : "简化引擎",
           endpoints: {
             translate: "POST /api/translate",
@@ -364,6 +550,16 @@ export default {
         }), { 
           headers: { 
             'Content-Type': 'application/json',
+            ...corsHeaders 
+          } 
+        });
+      }
+      
+      // 根路径返回网页界面
+      if (path === '/') {
+        return new Response(HTML_PAGE, { 
+          headers: { 
+            'Content-Type': 'text/html',
             ...corsHeaders 
           } 
         });
