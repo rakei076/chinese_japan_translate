@@ -1,7 +1,7 @@
 // Cloudflare Workers 中日翻译 V2.0
 // 支持智能缓存、统计分析、多路由
 
-// 简化MD5实现
+// 简化哈希实现
 function simpleHash(str) {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
@@ -51,32 +51,115 @@ function categorizeText(text) {
   return '通用词汇';
 }
 
-// 简化翻译引擎（可扩展为真实AI）
-async function translateText(text, sourceLang) {
-  const translations = {
-    '你好': 'こんにちは',
-    '谢谢': 'ありがとう', 
-    '再见': 'さようなら',
-    '东京': '東京',
-    '编程': 'プログラミング',
-    'こんにちは': '你好',
-    'ありがとう': '谢谢',
-    'さようなら': '再见', 
-    '東京': '东京',
-    'プログラミング': '编程'
-  };
-  
-  const directTranslation = translations[text];
-  const category = categorizeText(text);
-  
-  return {
-    detected_language: sourceLang,
-    translation_direction: sourceLang === '中文' ? '中→日' : '日→中',
-    word_category: category,
-    translations: directTranslation ? [directTranslation] : [`${text}(翻译)`],
-    romanization: directTranslation || text,
-    confidence: directTranslation ? 0.95 : 0.6
-  };
+// DeepSeek AI翻译引擎
+async function translateText(text, sourceLang, env) {
+  const apiKey = env.DEEPSEEK_API_KEY;
+  if (!apiKey) {
+    // 降级到简单翻译
+    const simpleTranslations = {
+      '你好': 'こんにちは',
+      '谢谢': 'ありがとう', 
+      '再见': 'さようなら',
+      '东京': '東京',
+      '編程': 'プログラミング',
+      'こんにちは': '你好',
+      'ありがとう': '谢谢',
+      'さようなら': '再见', 
+      '東京': '东京',
+      'プログラミング': '编程'
+    };
+    
+    const directTranslation = simpleTranslations[text];
+    const category = categorizeText(text);
+    
+    return {
+      detected_language: sourceLang,
+      translation_direction: sourceLang === '中文' ? '中→日' : '日→中',
+      word_category: category,
+      translations: directTranslation ? [directTranslation] : [`${text}(翻译)`],
+      romanization: directTranslation || text,
+      confidence: directTranslation ? 0.95 : 0.6,
+      source: 'fallback'
+    };
+  }
+
+  // DeepSeek AI翻译
+  const prompt = `请翻译以下文本并返回JSON格式：
+
+文本：${text}
+
+JSON格式：
+{
+  "detected_language": "中文|日语",
+  "translation_direction": "中→日|日→中",
+  "word_category": "地名|大学|交通|计算机|医学|法律|经济|机构|通用词汇",
+  "translations": ["翻译结果"],
+  "romanization": "假名读音（如果是日语）",
+  "confidence": 0.95
+}`;
+
+  try {
+    const response = await fetch('https://api.deepseek.com/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'deepseek-chat',
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.3,
+        max_tokens: 1000
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`DeepSeek API错误: ${response.status}`);
+    }
+
+    const result = await response.json();
+    const aiResponse = result.choices[0].message.content;
+    
+    // 解析JSON响应
+    try {
+      const jsonStart = aiResponse.indexOf('{');
+      const jsonEnd = aiResponse.lastIndexOf('}') + 1;
+      const jsonStr = aiResponse.slice(jsonStart, jsonEnd);
+      const parsed = JSON.parse(jsonStr);
+      
+      return {
+        ...parsed,
+        source: 'deepseek'
+      };
+    } catch (parseError) {
+      // JSON解析失败，返回基本结构
+      const category = categorizeText(text);
+      return {
+        detected_language: sourceLang,
+        translation_direction: sourceLang === '中文' ? '中→日' : '日→中',
+        word_category: category,
+        translations: [aiResponse.replace(/```json|```/g, '').trim()],
+        romanization: text,
+        confidence: 0.8,
+        source: 'deepseek-raw'
+      };
+    }
+  } catch (error) {
+    console.error('DeepSeek API调用失败:', error);
+    
+    // 降级到简单翻译
+    const category = categorizeText(text);
+    return {
+      detected_language: sourceLang,
+      translation_direction: sourceLang === '中文' ? '中→日' : '日→中',
+      word_category: category,
+      translations: [`${text}(API错误)`],
+      romanization: text,
+      confidence: 0.3,
+      source: 'error-fallback',
+      error: error.message
+    };
+  }
 }
 
 // 统计数据更新
@@ -152,7 +235,7 @@ async function handleTranslate(request, env) {
 
   // 新翻译
   const startTime = Date.now();
-  const translationResult = await translateText(cleanText, sourceLang);
+  const translationResult = await translateText(cleanText, sourceLang, env);
   const processingTime = `${Date.now() - startTime}ms`;
   
   // 保存缓存
@@ -271,12 +354,13 @@ export default {
         return new Response(JSON.stringify({
           name: "中日翻译API V2.0",
           version: env.VERSION || "2.0",
+          ai_engine: env.DEEPSEEK_API_KEY ? "DeepSeek" : "简化引擎",
           endpoints: {
             translate: "POST /api/translate",
             stats: "GET /api/stats",
             daily_stats: "GET /api/stats/daily?days=7"
           },
-          features: ["智能缓存", "统计分析", "词汇分类", "全球分布"]
+          features: ["智能缓存", "统计分析", "词汇分类", "全球分布", "AI翻译"]
         }), { 
           headers: { 
             'Content-Type': 'application/json',
