@@ -1,4 +1,4 @@
-name = "chinese-japanese-translation"
+name = "chinese-translate-api"
 main = "src/index.js"
 compatibility_date = "2023-12-01"
 
@@ -7,16 +7,14 @@ compatibility_date = "2023-12-01"
 APP_ENV = "production"
 VERSION = "2.0"
 
-# KV命名空间配置
+# KV命名空间配置 - 这些ID需要在Workers中重新配置
 [[kv_namespaces]]
 binding = "CACHE"
-id = "b29f99f32630402aa8bbecc1182222dc"
-preview_id = "4f0ab00246b7488cb07717c0148b282a"
+id = "YOUR_CACHE_KV_ID"
 
 [[kv_namespaces]]
-binding = "STATS"
-id = "7afc816bfff64a85bc0f09d6892f2a63"
-preview_id = "2f9d0b29f955451484dda31c5d2297bc"
+binding = "STATS"  
+id = "YOUR_STATS_KV_ID"
 
 # 开发环境配置
 [env.development]
