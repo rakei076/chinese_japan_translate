@@ -1,0 +1,20 @@
+{
+  "functions": {
+    "api/translate.py": {
+      "runtime": "@vercel/python"
+    }
+  },
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/frontend/$1"
+    }
+  ],
+  "env": {
+    "DEEPSEEK_API_KEY": "sk-1bde4e88dae04224b43a8ac65e782d51"
+  }
+} 

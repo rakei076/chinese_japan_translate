@@ -46,7 +46,8 @@ async function translateText() {
     resultDiv.style.display = 'none';
     
     try {
-        const response = await fetch('/translate', {
+        // 适配Vercel部署的API路径
+        const response = await fetch('/api/translate', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
