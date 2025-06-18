@@ -4,3 +4,21 @@ INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
 INFO:     127.0.0.1:62563 - "GET / HTTP/1.1" 200 OK
 INFO:     127.0.0.1:62600 - "POST /translate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63539 - "POST /translate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63886 - "POST /translate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54430 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54497 - "GET /index.html HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54612 - "POST /translate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54727 - "GET /index.html HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54642 - "POST /translate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54777 - "POST /translate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54983 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54993 - "GET /index.html HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:55110 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55117 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55167 - "GET /frontend/index.html HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:55331 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55336 - "GET /frontend/index.html HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:55342 - "GET /index.html HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55342 - "GET /script.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55342 - "GET / HTTP/1.1" 200 OK

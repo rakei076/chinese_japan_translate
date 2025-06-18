@@ -1,0 +1,11 @@
+{
+    "python.defaultInterpreter": "./backend/venv/bin/python",
+    "python.pythonPath": "./backend/venv/bin/python",
+    "pylance.include": [
+        "backend/**"
+    ],
+    "python.analysis.extraPaths": [
+        "./backend"
+    ],
+    "python.analysis.autoSearchPaths": true
+} 
