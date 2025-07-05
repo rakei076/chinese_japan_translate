@@ -176,8 +176,11 @@
                             <button class="btn btn-primary btn-lg me-md-2" onclick="translateText()">
                                 <i class="bi bi-translate me-2"></i>开始翻译
                             </button>
-                            <button class="btn btn-outline-secondary btn-lg" onclick="clearText()">
+                            <button class="btn btn-outline-secondary btn-lg me-md-2" onclick="clearText()">
                                 <i class="bi bi-arrow-clockwise me-2"></i>清空重写
+                            </button>
+                            <button class="btn btn-outline-info btn-lg" onclick="showCapabilities()">
+                                <i class="bi bi-info-circle me-2"></i>我能做什么
                             </button>
                         </div>
                         
@@ -232,6 +235,119 @@
             document.getElementById('inputText').value = '';
             document.getElementById('resultDiv').style.display = 'none';
             checkCharCount();
+        }
+        
+        function showCapabilities() {
+            const resultDiv = document.getElementById('resultDiv');
+            
+            const capabilitiesHTML = `
+                <div class="alert alert-info" role="alert">
+                    <h4 class="alert-heading">
+                        <i class="bi bi-robot me-2"></i>我可以为您做什么？
+                    </h4>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card border-primary h-100">
+                                <div class="card-header bg-primary text-white">
+                                    <h6 class="mb-0"><i class="bi bi-translate me-2"></i>双向翻译服务</h6>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-unstyled mb-0">
+                                        <li><i class="bi bi-check-circle text-success me-2"></i>中文 → 日语翻译</li>
+                                        <li><i class="bi bi-check-circle text-success me-2"></i>日语 → 中文翻译</li>
+                                        <li><i class="bi bi-check-circle text-success me-2"></i>自动语言检测</li>
+                                        <li><i class="bi bi-check-circle text-success me-2"></i>智能翻译策略选择</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-success h-100">
+                                <div class="card-header bg-success text-white">
+                                    <h6 class="mb-0"><i class="bi bi-gear me-2"></i>支持的内容类型</h6>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-unstyled mb-0">
+                                        <li><i class="bi bi-tag text-primary me-2"></i>词语和短语翻译</li>
+                                        <li><i class="bi bi-chat-quote text-primary me-2"></i>句子和段落翻译</li>
+                                        <li><i class="bi bi-file-text text-primary me-2"></i>长篇文章翻译（最大10,000字符）</li>
+                                        <li><i class="bi bi-cpu text-primary me-2"></i>专业术语翻译</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card border-warning h-100">
+                                <div class="card-header bg-warning text-dark">
+                                    <h6 class="mb-0"><i class="bi bi-stars me-2"></i>智能特性</h6>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-unstyled mb-0">
+                                        <li><i class="bi bi-bezier2 text-warning me-2"></i>AI智能翻译（DeepSeek驱动）</li>
+                                        <li><i class="bi bi-collection text-warning me-2"></i>9大词汇分类识别</li>
+                                        <li><i class="bi bi-volume-up text-warning me-2"></i>日语平假名读音标注</li>
+                                        <li><i class="bi bi-lightning text-warning me-2"></i>智能缓存加速</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-info h-100">
+                                <div class="card-header bg-info text-white">
+                                    <h6 class="mb-0"><i class="bi bi-speedometer2 me-2"></i>性能优势</h6>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-unstyled mb-0">
+                                        <li><i class="bi bi-clock text-info me-2"></i>响应速度 < 100ms</li>
+                                        <li><i class="bi bi-globe text-info me-2"></i>全球300+节点加速</li>
+                                        <li><i class="bi bi-shield-check text-info me-2"></i>99.99%服务可用性</li>
+                                        <li><i class="bi bi-arrow-repeat text-info me-2"></i>智能缓存系统</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card border-secondary">
+                        <div class="card-header bg-secondary text-white">
+                            <h6 class="mb-0"><i class="bi bi-tags me-2"></i>支持的词汇分类</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="badge category-地名 badge-category">地名</span>
+                                <span class="badge category-大学 badge-category">大学</span>
+                                <span class="badge category-计算机 badge-category">计算机</span>
+                                <span class="badge category-美食 badge-category">美食</span>
+                                <span class="badge category-交通 badge-category">交通</span>
+                                <span class="badge category-购物 badge-category">购物</span>
+                                <span class="badge category-旅游 badge-category">旅游</span>
+                                <span class="badge category-文化 badge-category">文化</span>
+                                <span class="badge category-通用词汇 badge-category">通用词汇</span>
+                            </div>
+                            <small class="text-muted mt-2 d-block">
+                                系统会自动识别您输入的内容类型，并进行相应的专业翻译
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <p class="mb-0">
+                            <i class="bi bi-lightbulb text-warning me-2"></i>
+                            <strong>使用提示：</strong>直接在上方输入框中输入中文或日文，点击"开始翻译"即可体验所有功能！
+                        </p>
+                    </div>
+                </div>
+            `;
+            
+            resultDiv.innerHTML = capabilitiesHTML;
+            resultDiv.style.display = 'block';
+            
+            // 平滑滚动到结果
+            resultDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
         
         async function translateText() {

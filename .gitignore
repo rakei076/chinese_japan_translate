@@ -41,4 +41,7 @@ Thumbs.db
 node_modules/
 
 # Build outputs
-*.pyc 
+*.pyc
+
+# Wrangler local development files
+.wrangler/ 
