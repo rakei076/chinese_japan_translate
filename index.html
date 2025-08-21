@@ -176,8 +176,11 @@
                             <button class="btn btn-primary btn-lg me-md-2" onclick="translateText()">
                                 <i class="bi bi-translate me-2"></i>开始翻译
                             </button>
-                            <button class="btn btn-outline-secondary btn-lg" onclick="clearText()">
+                            <button class="btn btn-outline-secondary btn-lg me-md-2" onclick="clearText()">
                                 <i class="bi bi-arrow-clockwise me-2"></i>清空重写
+                            </button>
+                            <button class="btn btn-info btn-lg" onclick="toggleCapabilities()">
+                                <i class="bi bi-question-circle me-2"></i>我能做什么?
                             </button>
                         </div>
                         
@@ -191,6 +194,83 @@
                         
                         <!-- 翻译结果 -->
                         <div id="resultDiv" style="display: none;"></div>
+                        
+                        <!-- 功能介绍 -->
+                        <div id="capabilitiesDiv" class="mt-4" style="display: none;">
+                            <div class="card border-primary">
+                                <div class="card-header bg-primary text-white">
+                                    <h5 class="mb-0">
+                                        <i class="bi bi-stars me-2"></i>我能为您做什么？
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="alert alert-info d-flex align-items-center mb-4" role="alert">
+                                        <i class="bi bi-info-circle-fill me-3 flex-shrink-0"></i>
+                                        <div>
+                                            <strong>AI 智能翻译系统</strong> - 基于 DeepSeek AI 技术，为您提供专业的中日双向翻译服务
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <h6 class="text-success">
+                                                <i class="bi bi-arrow-left-right me-2"></i>双向翻译
+                                            </h6>
+                                            <p class="small text-muted">支持中文→日文、日文→中文的智能翻译，自动识别输入语言</p>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <h6 class="text-primary">
+                                                <i class="bi bi-fonts me-2"></i>平假名读音
+                                            </h6>
+                                            <p class="small text-muted">日语翻译自动提供平假名读音，帮助您正确发音</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <h6 class="text-warning">
+                                                <i class="bi bi-cpu me-2"></i>智能分类
+                                            </h6>
+                                            <p class="small text-muted">自动识别词汇类型：地名、大学、计算机、交通、医学、法律、经济等9大类别</p>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <h6 class="text-info">
+                                                <i class="bi bi-lightning me-2"></i>类型识别
+                                            </h6>
+                                            <p class="small text-muted">自动判断输入类型：词语翻译或文章翻译，采用最适合的翻译策略</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <h6 class="mb-3">
+                                        <i class="bi bi-list-check me-2"></i>支持内容类型
+                                    </h6>
+                                    <div class="d-flex flex-wrap gap-2 mb-4">
+                                        <span class="badge bg-success">📝 词语</span>
+                                        <span class="badge bg-primary">💬 句子</span>
+                                        <span class="badge bg-warning">📄 段落</span>
+                                        <span class="badge bg-info">📚 文章</span>
+                                    </div>
+                                    
+                                    <div class="row text-center">
+                                        <div class="col-md-4">
+                                            <i class="bi bi-lightning-charge text-warning display-6"></i>
+                                            <h6 class="mt-2">极速响应</h6>
+                                            <small class="text-muted">全球边缘计算 &lt;100ms</small>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <i class="bi bi-shield-check text-success display-6"></i>
+                                            <h6 class="mt-2">无需注册</h6>
+                                            <small class="text-muted">即输即译 保护隐私</small>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <i class="bi bi-infinity text-primary display-6"></i>
+                                            <h6 class="mt-2">大容量支持</h6>
+                                            <small class="text-muted">最多10,000字符</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
@@ -232,6 +312,20 @@
             document.getElementById('inputText').value = '';
             document.getElementById('resultDiv').style.display = 'none';
             checkCharCount();
+        }
+        
+        function toggleCapabilities() {
+            const capabilitiesDiv = document.getElementById('capabilitiesDiv');
+            const resultDiv = document.getElementById('resultDiv');
+            
+            if (capabilitiesDiv.style.display === 'none' || capabilitiesDiv.style.display === '') {
+                capabilitiesDiv.style.display = 'block';
+                resultDiv.style.display = 'none';
+                // Scroll to the capabilities section
+                capabilitiesDiv.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                capabilitiesDiv.style.display = 'none';
+            }
         }
         
         async function translateText() {
@@ -469,5 +563,8 @@
             checkCharCount();
         });
     </script>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html> 
